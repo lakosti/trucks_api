@@ -2,7 +2,10 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 
-const PORT = 3000;
+import { env } from './utils/env.js';
+import { getAllTrucks, getTruckById } from './services/trucks.js';
+
+const PORT = Number(env('PORT', '3000')); //env -- це завжди рядок, тому примусово приводимо типи даних  -- 3000 - default value
 
 export const startServer = () => {
   const app = express();
@@ -21,6 +24,30 @@ export const startServer = () => {
   app.get('/', (req, res) => {
     res.json({
       message: 'Hello world!',
+    });
+  });
+
+  app.get('/campers', async (req, res) => {
+    const trucks = await getAllTrucks();
+
+    res.status(200).json({
+      total: trucks.length,
+      data: trucks,
+    });
+  });
+
+  app.get('/campers/:campersId', async (req, res) => {
+    const { campersId } = req.params;
+    const truck = await getTruckById(campersId);
+
+    if (!truck) {
+      return res.status(404).json({
+        message: 'Truck not found',
+      });
+    }
+
+    res.status(200).json({
+      data: truck,
     });
   });
 
