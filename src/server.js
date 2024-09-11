@@ -32,7 +32,7 @@ export const startServer = () => {
 
     res.status(200).json({
       total: trucks.length,
-      data: trucks,
+      items: trucks,
     });
   });
 
